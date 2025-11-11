@@ -17,14 +17,14 @@
     </view>
 
     <uni-section title="最新评论" type="line" padding>
-      <view class="comment-list">
-        <view v-for="comment in commentList" :key="comment.commentId" class="comment-item">
-          <text class="comment-author">{{ comment.createBy }}：</text>
-          <text class="comment-content">{{ comment.content }}</text>
-        </view>
-        <uni-load-more :status="loadingStatus"></uni-load-more>
-      </view>
-    </uni-section>
+          <view class="comment-list">
+            <view v-for="comment in commentList" :key="comment.commentId" class="comment-item">
+              <text class="comment-author">{{ comment.nickName }}：</text>
+              <text class="comment-content">{{ comment.content }}</text>
+            </view>
+            <uni-load-more :status="loadingStatus"></uni-load-more>
+          </view>
+        </uni-section>
 
     <view class="bottom-input-bar">
       <input 
@@ -42,7 +42,7 @@
 <script>
 import { listComment, addComment } from '@/api/campus/comment'
 // 假设您还需要话题详情 API，这里我们假设 listTopic 接口能通过 topicId 查询单个话题
-import { listTopic } from '@/api/campus/topic' 
+import { getTopic, listTopic } from '@/api/campus/topic' 
 // 确保 parseTime 函数可用
 function parseTime(time, cFormat) { /* ... (函数体保持不变) ... */ return time }
 
@@ -78,50 +78,58 @@ export default {
     
     // 获取话题详情
     getTopicDetail() {
-        // 假设 listTopic 接口支持通过 topicId 精确查询
-        listTopic({ topicId: this.topicId }).then(res => {
-            if (res.rows && res.rows.length > 0) {
-                this.topic = res.rows[0];
-            }
-        }).catch(err => {
-            uni.showToast({ title: '加载话题详情失败', icon: 'none' })
-        })
-    },
+            // [修改] 使用 getTopic 接口
+            // listTopic({ topicId: this.topicId }).then(res => { // [删除]
+            getTopic(this.topicId).then(res => { // [修改]
+                // if (res.rows && res.rows.length > 0) { // [删除]
+                //     this.topic = res.rows[0]; // [删除]
+                // }
+                this.topic = res.data; // [修改] 后端直接返回话题对象
+            }).catch(err => {
+                uni.showToast({ title: '加载话题详情失败', icon: 'none' })
+            })
+        },
 
     // 获取评论列表
     getCommentList() {
-      if (this.loadingStatus === 'noMore' || this.loadingStatus === 'loading') return;
-      this.loadingStatus = 'loading'
-      listComment(this.queryParams).then(res => {
-        this.commentList = [...this.commentList, ...res.rows]
-        this.total = res.total
-        this.loadingStatus = (this.commentList.length >= this.total) ? 'noMore' : 'more'
-      }).catch(err => {
-        uni.showToast({ title: '加载评论失败', icon: 'none' })
-        this.loadingStatus = 'more'
-      })
-    },
+          // [修改] 移除分页判断 (if (this.loadingStatus === 'noMore' ...))
+          this.loadingStatus = 'loading'
+          // listComment 现在将调用 /campus/topic/comments/{topicId}
+          listComment(this.queryParams).then(res => {
+            // [修改] 后端在 res.data 中直接返回数组
+            // this.commentList = [...this.commentList, ...res.rows] // [删除]
+            // this.total = res.total // [删除]
+            this.commentList = res.data // [修改]
+            this.loadingStatus = 'noMore' // [修改] 因为已加载全部
+          }).catch(err => {
+            uni.showToast({ title: '加载评论失败', icon: 'none' })
+            this.loadingStatus = 'more' // [修改] 允许重试
+          })
+        },
     
     // 提交评论
     submitComment() {
-      if (!this.commentForm.content.trim()) {
-        uni.showToast({ title: '评论内容不能为空', icon: 'none' });
-        return;
-      }
-      this.isPosting = true;
-      addComment(this.commentForm).then(res => {
-        uni.showToast({ title: '评论成功', icon: 'success' });
-        this.commentForm.content = '';
-        this.commentList = []; // 清空列表
-        this.queryParams.pageNum = 1;
-        this.loadingStatus = 'more';
-        this.getCommentList(); // 重新加载评论列表
-      }).catch(err => {
-        uni.showToast({ title: '评论失败，请检查评论接口', icon: 'none' });
-      }).finally(() => {
-        this.isPosting = false;
-      })
-    }
+          if (!this.commentForm.content.trim()) {
+            uni.showToast({ title: '评论内容不能为空', icon: 'none' });
+            return;
+          }
+          this.isPosting = true;
+          addComment(this.commentForm).then(res => {
+            uni.showToast({ title: '评论成功', icon: 'success' });
+            this.commentForm.content = '';
+            
+            // [修改] 重置加载状态并重新获取列表
+            // this.commentList = []; // (可选)
+            // this.queryParams.pageNum = 1; // (不再需要)
+            this.loadingStatus = 'more'; // [修改] 重置状态
+            this.getCommentList(); // [修改] 重新加载评论列表
+            
+          }).catch(err => {
+            uni.showToast({ title: '评论失败', icon: 'none' }); // [修改] 简化提示
+          }).finally(() => {
+            this.isPosting = false;
+          })
+        }
   }
 }
 </script>

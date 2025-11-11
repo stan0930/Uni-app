@@ -9,6 +9,14 @@ export function listTopic(query) {
   })
 }
 
+// [新增] 查询校园话题详细 (参考PC端)
+export function getTopic(topicId) {
+  return request({
+    url: '/campus/topic/' + topicId, // [修改] 使用正确的详情接口
+    method: 'get'
+  })
+}
+
 // 新增校园圈子
 export function addTopic(data) {
   return request({
@@ -19,7 +27,7 @@ export function addTopic(data) {
 }
 
 // 【核心修正】匹配 PC 端的点赞接口 (PUT /campus/topic/toggleLike/{topicId})
-export function likeTopic(topicId) {
+export function toggleLike(topicId) {
   return request({
     url: '/campus/topic/toggleLike/' + topicId, // 路径与 PC 端一致
     method: 'put' // 方法与 PC 端一致
@@ -28,9 +36,10 @@ export function likeTopic(topicId) {
 }
 
 // 【核心修正】匹配 PC 端的收藏接口 (假设与点赞类似)
-export function favoriteTopic(topicId) {
+export function toggleFavorite(topicId) {
   return request({
     url: '/campus/topic/toggle-favorite/' + topicId, // 假设收藏接口与 PC 端一致
     method: 'put'
   })
 }
+
