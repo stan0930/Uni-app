@@ -9,10 +9,10 @@ export function listTopic(query) {
   })
 }
 
-// [新增] 查询校园话题详细 (参考PC端)
+// 查询校园话题详细
 export function getTopic(topicId) {
   return request({
-    url: '/campus/topic/' + topicId, // [修改] 使用正确的详情接口
+    url: '/campus/topic/' + topicId,
     method: 'get'
   })
 }
@@ -26,20 +26,54 @@ export function addTopic(data) {
   })
 }
 
-// 【核心修正】匹配 PC 端的点赞接口 (PUT /campus/topic/toggleLike/{topicId})
+// 点赞
 export function toggleLike(topicId) {
   return request({
-    url: '/campus/topic/toggleLike/' + topicId, // 路径与 PC 端一致
-    method: 'put' // 方法与 PC 端一致
-    // data: data  (PUT 请求体为空)
-  })
-}
-
-// 【核心修正】匹配 PC 端的收藏接口 (假设与点赞类似)
-export function toggleFavorite(topicId) {
-  return request({
-    url: '/campus/topic/toggle-favorite/' + topicId, // 假设收藏接口与 PC 端一致
+    url: '/campus/topic/toggleLike/' + topicId,
     method: 'put'
   })
 }
 
+// 收藏
+export function toggleFavorite(topicId) {
+  return request({
+    url: '/campus/topic/toggle-favorite/' + topicId,
+    method: 'put'
+  })
+}
+
+// 【新增】查询我发布的话题列表
+export function listMyTopics(query) {
+  return request({
+    url: '/campus/topic/my-list',
+    method: 'get',
+    params: query
+  })
+}
+
+// 【高亮：新增“我的评论”接口】
+export function listMyCommentedTopics(query) {
+  return request({
+    url: '/campus/topic/my-comments',
+    method: 'get',
+    params: query
+  })
+}
+
+// 【新增】查询我点赞的话题列表
+export function listMyLikedTopics(query) {
+  return request({
+    url: '/campus/topic/my-likes',
+    method: 'get',
+    params: query
+  })
+}
+
+// 【新增】查询我收藏的话题列表
+export function listMyFavoriteTopics(query) {
+  return request({
+    url: '/campus/topic/my-favorites',
+    method: 'get',
+    params: query
+  })
+}
