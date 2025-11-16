@@ -47,6 +47,26 @@
       "navigationBarTitleText": "发布圈子"
     }
   },
+  {
+        "path": "pages/todo/index",
+        "style": {
+          "navigationBarTitleText": "跑腿代办",
+          "enablePullDownRefresh": true
+        }
+      },
+      // --- 请在这里添加以下两个页面的配置 ---
+      {
+        "path": "pages/todo/post",
+        "style": {
+          "navigationBarTitleText": "发布跑腿任务"
+        }
+      },
+      {
+        "path": "pages/todo/detail",
+        "style": {
+          "navigationBarTitleText": "任务详情"
+        }
+      },
   // 原有的工作台页面（从 TabBar 移除，可保留为普通页面）
   {
     "path": "pages/work/index",

@@ -1,24 +1,201 @@
 <template>
   <view class="container">
-    <uni-section title="代办事项" type="line" padding>
-      <view class="content">
-        <text>当前暂无代办事项，或功能正在完善中。</text>
-        <uni-icons type="calendar" size="50" color="#e6a23c" style="margin-top: 20px;"></uni-icons>
+    <scroll-view
+      :refresher-triggered="triggered"
+      @refresherrefresh="onRefresh"
+      @scrolltolower="onBottom"
+      refresher-enabled="true"
+      scroll-y="true"
+      class="scroll-view"
+    >
+      <view v-if="!loading">
+        <view v-for="item in errandList" :key="item.orderId" class="card" @click="handleToDetail(item.orderId)">
+          <view class="card-header">
+            <text class="title">{{ item.title }}</text>
+            <text class="reward">￥{{ item.reward }}</text>
+          </view>
+          <view class="card-content">
+            <text class="content-text">{{ item.content }}</text>
+            <view v-if="item.deliveryAddress" class="address-box">
+              <uni-icons type="location-filled" size="14" color="#909399"></uni-icons>
+              <text class="address-text">{{ item.deliveryAddress }}</text>
+            </view>
+          </view>
+          <view class="card-footer">
+            <view class="user-info">
+              <image :src="item.publisherAvatar || '/static/images/profile.jpg'" class="avatar"></image>
+              <text class="username">{{ item.publisherName || '匿名' }}</text>
+            </view>
+            <view>
+              <uni-tag :text="getStatusText(item.status)" :type="getStatusType(item.status)" :inverted="true" size="small" />
+              <uni-tag :text="item.orderType" :inverted="true" size="small" style="margin-left: 10px;" />
+            </view>
+          </view>
+        </view>
+        <uni-load-more :status="loadingStatus"></uni-load-more>
       </view>
-    </uni-section>
+    </scroll-view>
+
+    <uni-fab ref="fab" horizontal="right" vertical="bottom" @fabClick="handleToPost"></uni-fab>
   </view>
 </template>
+
 <script>
-export default {}
+import { listErrand } from '@/api/campus/errand.js';
+
+export default {
+  data() {
+    return {
+      errandList: [],
+      loading: true,
+      triggered: false, 
+      loadingStatus: 'more', 
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10,
+        status: 0 
+      },
+      total: 0
+    };
+  },
+  onLoad() {
+    this.getList();
+  },
+  methods: {
+    /** 查询列表 */
+    getList() {
+      this.loadingStatus = 'loading';
+      this.loading = true;
+      listErrand(this.queryParams).then(res => {
+        if (res.code === 200) {
+          if (this.queryParams.pageNum === 1) {
+            this.errandList = res.rows;
+          } else {
+            this.errandList = this.errandList.concat(res.rows);
+          }
+          this.total = res.total;
+          this.loadingStatus = this.errandList.length >= this.total ? 'noMore' : 'more';
+        }
+        this.loading = false;
+        this.triggered = false;
+      }).catch(() => {
+         this.loading = false;
+         this.triggered = false;
+      });
+    },
+    /** 下拉刷新 */
+    onRefresh() {
+      if (this.triggered) return;
+      this.triggered = true;
+      this.queryParams.pageNum = 1;
+      this.getList();
+    },
+    /** 上拉加载 */
+    onBottom() {
+      if (this.loadingStatus === 'noMore') return;
+      this.queryParams.pageNum++;
+      this.getList();
+    },
+    /** 跳转到详情 */
+    handleToDetail(id) {
+      uni.navigateTo({
+        // *** 修正点 ***
+        // URL 参数名也改成 'orderId'
+        url: '/pages/todo/detail?orderId=' + id
+      });
+    },
+    /** 跳转到发布 */
+    handleToPost() {
+      uni.navigateTo({
+        url: '/pages/todo/post'
+      });
+    },
+    /** 状态文本 */
+    getStatusText(status) {
+      const statusMap = { 0: '待接单', 1: '进行中', 2: '已完成', 3: '已取消' };
+      return statusMap[status] || '未知';
+    },
+    /** 状态样式 */
+    getStatusType(status) {
+      const typeMap = { 0: 'warning', 1: 'primary', 2: 'success', 3: 'default' };
+      return typeMap[status] || 'default';
+    }
+  }
+};
 </script>
+
 <style scoped>
-.content {
+/* *** 修正点 ***
+  清除了所有非法的 ' ' 缩进字符
+*/
+.container {
+  height: 100vh;
   display: flex;
   flex-direction: column;
+}
+.scroll-view {
+  flex: 1;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+.card {
+  background-color: #fff;
+  border-radius: 8px;
+  margin: 12px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  padding: 30px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 10px;
+}
+.title {
   font-size: 16px;
+  font-weight: bold;
+}
+.reward {
+  font-size: 16px;
+  color: #e43d33;
+  font-weight: bold;
+}
+.card-content {
+  padding: 12px 0;
+}
+.content-text {
+  font-size: 14px;
+  color: #333;
+}
+.address-box {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  padding: 5px 8px;
+  background-color: #f8f8f8;
+  border-radius: 4px;
+}
+.address-text {
+  font-size: 13px;
   color: #909399;
+  margin-left: 5px;
+}
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #999;
+}
+.user-info {
+  display: flex;
+  align-items: center;
+}
+.avatar {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  margin-right: 8px;
 }
 </style>
