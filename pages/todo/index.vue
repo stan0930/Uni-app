@@ -1,5 +1,15 @@
 <template>
   <view class="container">
+    
+    <view class="navbar">
+      <uni-segmented-control
+        :current="currentTab"
+        :values="tabs.map(v => v.name)"
+        @clickItem="onClickItem"
+        style-type="text"
+        active-color="#3c9cff"
+      ></uni-segmented-control>
+    </view>
     <scroll-view
       :refresher-triggered="triggered"
       @refresherrefresh="onRefresh"
@@ -53,9 +63,19 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        status: 0 
+        status: 0 // 默认只看 "待接单" (status 0)
       },
-      total: 0
+      total: 0,
+      
+      // *** 新增：Tab 数据 ***
+      currentTab: 0, // 默认选中第一个 Tab
+      tabs: [
+        { name: '待接单', status: 0 },
+        { name: '进行中', status: 1 },
+        { name: '已完成', status: 2 },
+        { name: '已取消', status: 3 }
+      ],
+      // *** 修改结束 ***
     };
   },
   onLoad() {
@@ -66,6 +86,7 @@ export default {
     getList() {
       this.loadingStatus = 'loading';
       this.loading = true;
+      // getList 会自动使用 data 中最新的 queryParams.status
       listErrand(this.queryParams).then(res => {
         if (res.code === 200) {
           if (this.queryParams.pageNum === 1) {
@@ -83,24 +104,39 @@ export default {
          this.triggered = false;
       });
     },
+
+    // *** 新增：Tab 点击事件 ***
+    onClickItem(e) {
+      if (this.currentTab !== e.currentIndex) {
+        this.currentTab = e.currentIndex;
+        // 关键：更新 queryParams.status 为所选 Tab 的 status
+        this.queryParams.status = this.tabs[e.currentIndex].status;
+        this.resetList();
+      }
+    },
+    
+    // *** 新增：重置列表 ***
+    resetList() {
+      this.queryParams.pageNum = 1;
+      this.errandList = [];
+      this.getList();
+    },
+
     /** 下拉刷新 */
     onRefresh() {
       if (this.triggered) return;
       this.triggered = true;
-      this.queryParams.pageNum = 1;
-      this.getList();
+      this.resetList(); // 下拉刷新也调用 resetList
     },
     /** 上拉加载 */
     onBottom() {
       if (this.loadingStatus === 'noMore') return;
       this.queryParams.pageNum++;
-      this.getList();
+      this.getList(); // 上拉加载不清空列表，所以不调用 resetList
     },
     /** 跳转到详情 */
     handleToDetail(id) {
       uni.navigateTo({
-        // *** 修正点 ***
-        // URL 参数名也改成 'orderId'
         url: '/pages/todo/detail?orderId=' + id
       });
     },
@@ -126,12 +162,19 @@ export default {
 
 <style scoped>
 /* *** 修正点 ***
-  清除了所有非法的 ' ' 缩进字符
+  清除了所有非法的 ' ' 缩进字符
 */
 .container {
   height: 100vh;
   display: flex;
   flex-direction: column;
+}
+/* *** 新增：Navbar 样式 *** */
+.navbar {
+  background-color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 .scroll-view {
   flex: 1;
