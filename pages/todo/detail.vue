@@ -19,18 +19,28 @@
 
       <view class="user-section">
         <text class="section-title">发布者</text>
-        <uni-list-item :border="false" :thumb="detail.publisherAvatar || '/static/images/profile.jpg'" :title="detail.publisherName || '匿名'" />
+        <uni-list-item 
+          :border="false" 
+          :thumb="getAvatarUrl(detail.publisherAvatar)" 
+          :title="detail.publisherName || '匿名'" 
+        />
       </view>
 
       <view class="user-section" v-if="detail.takerId">
         <text class="section-title">接单者</text>
-        <uni-list-item :border="false" :thumb="detail.takerAvatar || '/static/images/profile.jpg'" :title="detail.takerName || '接单者 ' + detail.takerId" />
+        <uni-list-item 
+          :border="false" 
+          :thumb="getAvatarUrl(detail.takerAvatar)" 
+          :title="detail.takerName || '接单者 ' + detail.takerId" 
+        />
       </view>
     </view>
     
     <view class="footer-actions">
-      <button v-if="detail.status == 0" type="primary" @click="handleTake">立即接单</button>
-      <button v-if="detail.status == 1 && detail.isTaker" type="primary" @click="handleComplete">我已完成</button>
+      <button v-if="detail.status == 0 && isPublisher" type="warn" @click="handleCancel">取消订单</button>
+      <button v-if="detail.status == 0 && !isPublisher" type="primary" @click="handleTake">立即接单</button>
+      <button v-if="detail.status == 1 && isTaker" type="primary" @click="handleComplete">我已完成</button>
+      <button v-if="detail.status == 1 && isPublisher" type="warn" plain="true" @click="handleCancel">取消订单</button>
       <button v-if="detail.status == 2" type="default" disabled>订单已完成</button>
       <button v-if="detail.status == 3" type="default" disabled>订单已取消</button>
     </view>
@@ -38,142 +48,174 @@
 </template>
 
 <script>
-import { getErrand, takeErrand, completeErrand } from '@/api/campus/errand.js';
+import { getErrand, takeErrand, completeErrand, delErrand, updateErrand } from '@/api/campus/errand.js';
 import { mapGetters } from 'vuex';
+// 【新增】
+import config from '@/config';
 
 export default {
   data() {
     return {
-      // *** 修正点 ***
-      orderId: null, // 从 errandOrderId 改为 orderId
-      detail: null
+      orderId: null,
+      detail: null,
+      isPublisher: false, 
+      isTaker: false,
+      // 【新增】
+      baseUrl: config.baseUrl
     };
   },
   computed: {
+    // 这里之前报错 unknown getter: userId，现在修改 store 后应该正常了
     ...mapGetters(['userId'])
   },
   onLoad(options) {
-    // *** 修正点 ***
-    // 接收 'orderId'
     if (!options.orderId) { 
       this.$modal.msgError("参数错误");
-      uni.navigateBack();
+      setTimeout(() => uni.navigateBack(), 1000);
       return;
     }
     this.orderId = options.orderId;
     this.getDetail();
   },
   methods: {
+    // 【新增】头像处理方法
+    getAvatarUrl(avatar) {
+      if (!avatar) return '/static/images/profile.jpg';
+      if (avatar.startsWith('http') || avatar.startsWith('https')) {
+        return avatar;
+      }
+      return this.baseUrl + avatar;
+    },
+
     getDetail() {
-      // *** 修正点 ***
-      // 使用 this.orderId
       getErrand(this.orderId).then(res => {
         if (res.code === 200) {
+          const data = res.data;
           
-          // "防崩溃" 逻辑 (同 21:05:37)
+          // 使用 mapGetters 获取的 userId 进行对比
+          this.isPublisher = (data.createBy == this.userId) || (data.userId == this.userId);
+          this.isTaker = (data.takerId == this.userId);
+
           this.detail = {
-             ...res.data,
-             isTaker: res.data.takerId === this.userId, 
-             publisherName: null, 
-             publisherAvatar: null,
-             takerName: null,
-             takerAvatar: null
+             ...data,
+             publisherName: data.publisherName || '匿名',
+             takerName: data.takerName || (data.takerId ? `接单者 ${data.takerId}` : '')
           };
-          
-          if (res.data.takerId) {
-             this.detail.takerName = '接单者 ' + res.data.takerId;
-          }
           
         } else {
           this.$modal.msgError(res.msg);
         }
       });
     },
-    // 接单
+    // ... (handleTake, handleComplete, handleCancel, updateListPage, getStatusText 保持不变，请直接使用上次修复后的代码) ...
     handleTake() {
-      // *** 修正点 ***
-      takeErrand(this.orderId).then(res => {
-        this.$modal.msgSuccess("接单成功");
-        this.getDetail();
-        this.updateListPage(); 
-      });
+      this.$modal.confirm('确认接取该任务吗？').then(() => {
+        takeErrand(this.orderId).then(res => {
+          this.$modal.msgSuccess("接单成功");
+          this.getDetail();
+          this.updateListPage(); 
+        });
+      }).catch(() => {});
     },
-    // 完成订单
     handleComplete() {
-      // *** 修正点 ***
-      completeErrand(this.orderId).then(res => {
-        this.$modal.msgSuccess("操作成功");
-        this.getDetail();
-        this.updateListPage(); 
-      });
+      this.$modal.confirm('确认任务已完成吗？').then(() => {
+        completeErrand(this.orderId).then(res => {
+          this.$modal.msgSuccess("操作成功");
+          this.getDetail();
+          this.updateListPage(); 
+        });
+      }).catch(() => {});
     },
-    // 刷新列表页
+    handleCancel() {
+      this.$modal.confirm('确认取消该订单吗？').then(() => {
+        if (this.detail.status == 0) {
+           delErrand(this.orderId).then(res => {
+             this.$modal.msgSuccess("订单已取消");
+             uni.navigateBack(); 
+             this.updateListPage();
+           });
+        } else {
+           const data = { orderId: this.orderId, status: 3 };
+           updateErrand(data).then(res => {
+             this.$modal.msgSuccess("订单已取消");
+             this.getDetail();
+             this.updateListPage();
+           });
+        }
+      }).catch(() => {});
+    },
     updateListPage() {
        const pages = getCurrentPages();
        const prevPage = pages[pages.length - 2]; 
-       if (prevPage && typeof prevPage.onRefresh === 'function') {
-         prevPage.onRefresh(); 
+       if (prevPage && prevPage.$vm && typeof prevPage.$vm.onRefresh === 'function') {
+         prevPage.$vm.onRefresh(); 
+       } else if (prevPage && typeof prevPage.onRefresh === 'function') {
+         prevPage.onRefresh();
        }
     },
     getStatusText(status) {
       const statusMap = { 0: '待接单', 1: '进行中', 2: '已完成', 3: '已取消' };
       return statusMap[status] || '未知';
     }
-    // 移除了 getOrderTypeText 函数
   }
 };
 </script>
 
 <style scoped>
-/* *** 修正点 ***
-  清除了所有非法的 ' ' 缩进字符
-*/
+/* 样式保持不变 */
 .container {
-  padding-bottom: 70px; 
+  padding-bottom: 80px; 
+  background-color: #f5f7fa;
+  min-height: 100vh;
 }
 .card {
   margin: 12px;
   padding: 15px;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 .header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding-bottom: 10px;
+  padding-bottom: 12px;
   border-bottom: 1px solid #f0f0f0;
 }
 .title {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
+  color: #333;
   flex: 1;
+  line-height: 1.4;
 }
 .reward {
   font-size: 18px;
   font-weight: bold;
   color: #e43d33;
   padding-left: 10px;
+  white-space: nowrap;
 }
 .content {
   padding: 15px 0;
   font-size: 15px;
-  color: #333;
-  min-height: 80px;
+  color: #555;
+  line-height: 1.6;
+  min-height: 60px;
 }
 .info-list {
-  margin-top: 10px;
+  margin-top: 5px;
 }
 .user-section {
   margin-top: 15px;
   padding-top: 10px;
-  border-top: 1px solid #f5f5f5;
+  border-top: 1px dashed #eee;
 }
 .section-title {
-  font-size: 14px;
-  color: #999;
-  margin-bottom: 5px;
+  font-size: 13px;
+  color: #909399;
+  margin-bottom: 8px;
+  display: block;
 }
 .footer-actions {
   position: fixed;
@@ -181,9 +223,18 @@ export default {
   left: 0;
   right: 0;
   background: #fff;
-  padding: 10px 15px;
+  padding: 10px 20px;
   padding-bottom: calc(10px + constant(safe-area-inset-bottom));
   padding-bottom: calc(10px + env(safe-area-inset-bottom));
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid #e8e8e8;
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+}
+.footer-actions button {
+  flex: 1;
+  font-size: 15px;
+  border-radius: 20px;
 }
 </style>

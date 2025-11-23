@@ -3,8 +3,10 @@ const getters = {
   avatar: state => state.user.avatar,
   name: state => state.user.name,
   
-  // 【新增】暴露详细信息给 mapGetters
-  nickName: state => state.user.nickName || state.user.name, // 如果昵称为空，则使用用户名
+  // 【新增】映射 userId
+  userId: state => state.user.userId,
+  
+  nickName: state => state.user.nickName || state.user.name,
   phonenumber: state => state.user.phonenumber,
   email: state => state.user.email,
   sex: state => state.user.sex,

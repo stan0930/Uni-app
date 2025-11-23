@@ -1,4 +1,4 @@
-import { login, logout, getInfo } from '@/api/login' //
+import { login, logout, getInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 
 const user = {
@@ -6,7 +6,9 @@ const user = {
     token: getToken(),
     name: '',
     
-    // 【新增】扩展 state 以存储详细信息
+    // 【新增】添加 userId
+    userId: '', 
+    
     nickName: '', 
     avatar: '',
     phonenumber: '',
@@ -24,8 +26,10 @@ const user = {
     SET_NAME: (state, name) => {
       state.name = name
     },
-    
-    // 【新增】对应的 Mutations
+    // 【新增】
+    SET_USERID: (state, userId) => {
+      state.userId = userId
+    },
     SET_NICKNAME: (state, nickName) => {
       state.nickName = nickName
     },
@@ -41,7 +45,6 @@ const user = {
     SET_SEX: (state, sex) => {
       state.sex = sex
     },
-    
     SET_ROLES: (state, roles) => {
       state.roles = roles
     },
@@ -68,13 +71,15 @@ const user = {
       })
     },
 
-    // 获取用户信息 (核心修正点)
+    // 获取用户信息
     GetInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
         getInfo().then(res => {
           const user = res.user
           
-          // 【修正】存储完整的用户信息
+          // 【新增】保存 userId (注意：后端返回字段通常是 userId)
+          commit('SET_USERID', user.userId)
+          
           commit('SET_NAME', user.userName)
           commit('SET_NICKNAME', user.nickName)
           commit('SET_AVATAR', user.avatar)
@@ -91,7 +96,7 @@ const user = {
       })
     },
     
-    // 退出系统 (保持不变)
+    // 退出系统
     LogOut({ commit, state }) {
       return new Promise((resolve, reject) => {
         logout(state.token).then(() => {

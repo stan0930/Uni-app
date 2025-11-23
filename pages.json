@@ -34,12 +34,13 @@
     "style": {
       "navigationBarTitleText": "AI 助手"
     }
-  }, {
-    "path": "pages/todo/index",
-    "style": {
-      "navigationBarTitleText": "代办事项"
-    }
   }, 
+  // {
+  //   "path": "pages/todo/index",
+  //   "style": {
+  //     "navigationBarTitleText": "代办事项"
+  //   }
+  // }, 
   // 【圈子功能子页面】
   {
     "path": "pages/circle/post",
