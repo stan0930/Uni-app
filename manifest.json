@@ -58,7 +58,16 @@
         "template" : "static/index.html",
         "devServer" : {
             "port" : 9090,
-            "https" : false
+            "https" : false,
+            "proxy": {
+                "/dashscope": {
+                    "target": "https://dashscope.aliyuncs.com",
+                    "changeOrigin": true,
+                    "pathRewrite": {
+                        "^/dashscope": ""
+                    }
+                }
+            }
         },
         "title" : "RuoYi-App",
         "router" : {
