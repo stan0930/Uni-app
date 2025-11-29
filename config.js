@@ -1,7 +1,8 @@
 // 应用全局配置
 module.exports = {
   // baseUrl: 'https://vue.ruoyi.vip/prod-api',
-  baseUrl: 'http://localhost:8080',
+  // 使用代理路径，彻底解决跨域问题
+  baseUrl: '/dev-api',
   // 应用信息
   appInfo: {
     // 应用名称
