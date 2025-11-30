@@ -1,13 +1,11 @@
 <template>
   <view class="course-schedule">
     <view class="schedule-header">
-      <text class="header-title">我的课表</text>
+      <text class="header-title">我的课表 {{ readonly ? '' : '' }}</text>
     </view>
     
-    <!-- 课表主体 -->
     <scroll-view scroll-x class="schedule-container">
       <view class="schedule-table">
-        <!-- 表头：星期 -->
         <view class="table-header">
           <view class="time-column header-cell">节次</view>
           <view v-for="day in weekDays" :key="day.value" class="day-column header-cell">
@@ -15,14 +13,11 @@
           </view>
         </view>
         
-        <!-- 课程表格 -->
         <view v-for="section in sections" :key="section" class="table-row">
-          <!-- 节次列 -->
           <view class="time-column cell">
             <text class="section-number">第{{ section }}节</text>
           </view>
           
-          <!-- 每天的课程格子 -->
           <view 
             v-for="day in weekDays" 
             :key="day.value" 
@@ -37,7 +32,7 @@
               <text class="course-name">{{ getCourse(day.value, section).name }}</text>
               <text class="course-location">{{ getCourse(day.value, section).location }}</text>
             </view>
-            <view v-else class="empty-cell">
+            <view v-else-if="!readonly" class="empty-cell">
               <text class="add-icon">+</text>
             </view>
           </view>
@@ -45,7 +40,6 @@
       </view>
     </scroll-view>
     
-    <!-- 自定义编辑课程对话框 -->
     <view v-if="showPopup" class="popup-mask" @click="closePopup">
       <view class="popup-dialog" @click.stop>
         <view class="popup-title">{{ editMode ? '编辑课程' : '添加课程' }}</view>
@@ -106,6 +100,13 @@ import { listSchedule, addSchedule, updateSchedule, delSchedule, batchSaveSchedu
 
 export default {
   name: 'CourseSchedule',
+  props: {
+    // 是否只读模式
+    readonly: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       weekDays: [
@@ -143,24 +144,20 @@ export default {
     // 从后端加载课程数据
     async loadCourses() {
       try {
-        // 先尝试从后端加载
         const res = await listSchedule()
         if (res.code === 200) {
           this.courses = res.data || []
-          
-          // 如果后端没有数据，检查本地是否有数据需要迁移
           if (this.courses.length === 0) {
             await this.migrateLocalData()
           }
         }
       } catch (e) {
         console.error('加载课程数据失败', e)
-        // 如果请求失败（比如未登录），尝试从本地加载
         this.loadLocalCourses()
       }
     },
     
-    // 从本地存储加载数据（兜底方案）
+    // 从本地存储加载数据
     loadLocalCourses() {
       try {
         const data = uni.getStorageSync('course_schedule')
@@ -179,31 +176,15 @@ export default {
         if (localData) {
           const localCourses = JSON.parse(localData)
           if (localCourses.length > 0) {
-            // 批量上传到云端
             const res = await batchSaveSchedule(localCourses)
             if (res.code === 200) {
-              uni.showToast({
-                title: '课表已同步到云端',
-                icon: 'success'
-              })
-              // 清除本地数据
               uni.removeStorageSync('course_schedule')
-              // 重新加载
               this.loadCourses()
             }
           }
         }
       } catch (e) {
         console.error('数据迁移失败', e)
-      }
-    },
-    
-    // 保存课程数据到本地存储（已废弃，保留作为兜底）
-    saveCourses() {
-      try {
-        uni.setStorageSync('course_schedule', JSON.stringify(this.courses))
-      } catch (e) {
-        console.error('保存课程数据失败', e)
       }
     },
     
@@ -214,6 +195,13 @@ export default {
     
     // 处理单元格点击
     handleCellClick(day, section) {
+      // 如果是只读模式，直接返回，不执行任何操作
+      if (this.readonly) {
+        // 可选：提示用户去工作台修改
+        // uni.showToast({ title: '请前往工作台修改课表', icon: 'none' });
+        return;
+      }
+
       console.log('点击单元格:', day, section)
       const existingCourse = this.getCourse(day, section)
       
@@ -222,7 +210,7 @@ export default {
         this.editMode = true
         this.currentCourse = { ...existingCourse }
       } else {
-        // 添加模式（不设置ID，由后端生成）
+        // 添加模式
         this.editMode = false
         this.currentCourse = {
           day: day,
@@ -236,7 +224,6 @@ export default {
       
       // 显示弹窗
       this.showPopup = true
-      console.log('当前课程:', this.currentCourse)
     },
     
     // 保存课程
@@ -249,43 +236,27 @@ export default {
         return
       }
       
-      console.log('准备保存课程:', this.currentCourse)
-      
       try {
         if (this.editMode) {
           // 更新现有课程
           const res = await updateSchedule(this.currentCourse)
-          console.log('更新课程响应:', res)
-          
           if (res.code === 200) {
             const index = this.courses.findIndex(c => c.id === this.currentCourse.id)
             if (index !== -1) {
               this.courses[index] = { ...this.currentCourse }
             }
-            uni.showToast({
-              title: '保存成功',
-              icon: 'success'
-            })
+            uni.showToast({ title: '保存成功', icon: 'success' })
           }
         } else {
           // 添加新课程
           const res = await addSchedule(this.currentCourse)
-          console.log('添加课程响应:', res)
-          
           if (res.code === 200 && res.data) {
-            // 使用后端返回的完整数据
             this.courses.push(res.data)
-            console.log('课程列表已更新:', this.courses)
-            
-            uni.showToast({
-              title: '添加成功',
-              icon: 'success'
-            })
+            uni.showToast({ title: '添加成功', icon: 'success' })
           } else {
             throw new Error(res.msg || '添加失败')
           }
         }
-        
         this.closePopup()
       } catch (e) {
         console.error('保存课程失败:', e)
@@ -308,17 +279,11 @@ export default {
               if (result.code === 200) {
                 this.courses = this.courses.filter(c => c.id !== this.currentCourse.id)
                 this.closePopup()
-                uni.showToast({
-                  title: '删除成功',
-                  icon: 'success'
-                })
+                uni.showToast({ title: '删除成功', icon: 'success' })
               }
             } catch (e) {
               console.error('删除课程失败', e)
-              uni.showToast({
-                title: '删除失败，请重试',
-                icon: 'none'
-              })
+              uni.showToast({ title: '删除失败，请重试', icon: 'none' })
             }
           }
         }

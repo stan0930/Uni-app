@@ -21,7 +21,9 @@ list.forEach(item => {
     invoke(to) {
       if (getToken()) {
         if (to.url === loginPage) {
-          uni.reLaunch({ url: "/" })
+          // ❌ 原代码：uni.reLaunch({ url: "/" })  <-- 报错原因
+          // ✅ 修改为：
+          uni.reLaunch({ url: "/pages/index" })
         }
         return true
       } else {

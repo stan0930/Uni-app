@@ -1,163 +1,241 @@
 {
-  "pages": [{
-    "path": "pages/login",
-    "style": {
-      "navigationBarTitleText": "登录"
+  "pages": [
+    {
+      "path": "pages/login",
+      "style": {
+        "navigationBarTitleText": "登录"
+      }
+    },
+<<<<<<< HEAD
+<<<<<<< HEAD
+	{
+	      "path": "pages/mine/history",
+	      "style": {
+	        "navigationBarTitleText": "我的记录"
+	      }
+	    },
+=======
+>>>>>>> 1842498d63676102edb357e8c34e03b8f2fca3bf
+=======
+>>>>>>> 1842498d63676102edb357e8c34e03b8f2fca3bf
+    {
+      "path": "pages/register",
+      "style": {
+        "navigationBarTitleText": "注册"
+      }
+    },
+    {
+      "path": "pages/circle/detail",
+      "style": {
+        "navigationBarTitleText": "话题详情"
+      }
+    },
+    {
+      "path": "pages/index",
+      "style": {
+        "navigationBarTitleText": "首页",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/circle/index",
+      "style": {
+        "navigationBarTitleText": "校园圈子"
+      }
+    },
+    {
+      "path": "pages/ai/index",
+      "style": {
+        "navigationBarTitleText": "AI 助手"
+      }
+    },
+    {
+      "path": "pages/circle/post",
+      "style": {
+        "navigationBarTitleText": "发布圈子"
+      }
+    },
+    {
+      "path": "pages/todo/index",
+      "style": {
+        "navigationBarTitleText": "跑腿代办",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/todo/post",
+      "style": {
+        "navigationBarTitleText": "发布跑腿任务"
+      }
+    },
+    {
+      "path": "pages/todo/detail",
+      "style": {
+        "navigationBarTitleText": "任务详情"
+      }
+    },
+<<<<<<< HEAD
+<<<<<<< HEAD
+    /* === 暂时移除以下二手市场页面，防止报错 ===
+=======
+>>>>>>> 1842498d63676102edb357e8c34e03b8f2fca3bf
+=======
+>>>>>>> 1842498d63676102edb357e8c34e03b8f2fca3bf
+    {
+      "path": "pages/secondhand/index",
+      "style": {
+        "navigationBarTitleText": "二手市场",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/secondhand/detail",
+      "style": {
+        "navigationBarTitleText": "商品详情"
+      }
+    },
+    {
+      "path": "pages/secondhand/post",
+      "style": {
+        "navigationBarTitleText": "发布商品"
+      }
+    },
+<<<<<<< HEAD
+<<<<<<< HEAD
+    */
+    {
+      "path": "pages/schedule/index",
+          "style": {
+            "navigationBarTitleText": "课表管理"
+          }
+    },
+=======
+>>>>>>> 1842498d63676102edb357e8c34e03b8f2fca3bf
+=======
+>>>>>>> 1842498d63676102edb357e8c34e03b8f2fca3bf
+    {
+      "path": "pages/work/index",
+      "style": {
+        "navigationBarTitleText": "工作台"
+      }
+    },
+    {
+      "path": "pages/mine/index",
+      "style": {
+        "navigationBarTitleText": "我的"
+      }
+    },
+    {
+      "path": "pages/mine/avatar/index",
+      "style": {
+        "navigationBarTitleText": "修改头像"
+      }
+    },
+    {
+      "path": "pages/mine/info/index",
+      "style": {
+        "navigationBarTitleText": "个人信息"
+      }
+    },
+    {
+      "path": "pages/mine/info/edit",
+      "style": {
+        "navigationBarTitleText": "编辑资料"
+      }
+    },
+    {
+      "path": "pages/mine/pwd/index",
+      "style": {
+        "navigationBarTitleText": "修改密码"
+      }
+    },
+    {
+      "path": "pages/mine/setting/index",
+      "style": {
+        "navigationBarTitleText": "应用设置"
+      }
+    },
+    {
+      "path": "pages/mine/help/index",
+      "style": {
+        "navigationBarTitleText": "常见问题"
+      }
+    },
+    {
+      "path": "pages/mine/about/index",
+      "style": {
+        "navigationBarTitleText": "关于我们"
+      }
+    },
+    {
+      "path": "pages/common/webview/index",
+      "style": {
+        "navigationBarTitleText": "浏览网页"
+      }
+    },
+    {
+      "path": "pages/common/textview/index",
+      "style": {
+        "navigationBarTitleText": "浏览文本"
+      }
     }
-  }, {
-    "path": "pages/register",
-    "style": {
-      "navigationBarTitleText": "注册"
-    }
-  },
-  {
-    "path": "pages/circle/detail",
-    "style": {
-      "navigationBarTitleText": "话题详情"
-    }
-  },
-  {
-    "path": "pages/index",
-    "style": {
-      "navigationBarTitleText": "首页",
-      "navigationStyle": "custom"
-    }
-  }, 
-  // 【新增 TabBar 页面】
-  {
-    "path": "pages/circle/index",
-    "style": {
-      "navigationBarTitleText": "校园圈子"
-    }
-  }, {
-    "path": "pages/ai/index",
-    "style": {
-      "navigationBarTitleText": "AI 助手"
-    }
-  }, 
-  // {
-  //   "path": "pages/todo/index",
-  //   "style": {
-  //     "navigationBarTitleText": "代办事项"
-  //   }
-  // }, 
-  // 【圈子功能子页面】
-  {
-    "path": "pages/circle/post",
-    "style": {
-      "navigationBarTitleText": "发布圈子"
-    }
-  },
-  {
-        "path": "pages/todo/index",
-        "style": {
-          "navigationBarTitleText": "跑腿代办",
-          "enablePullDownRefresh": true
-        }
-      },
-      // --- 请在这里添加以下两个页面的配置 ---
-      {
-        "path": "pages/todo/post",
-        "style": {
-          "navigationBarTitleText": "发布跑腿任务"
-        }
-      },
-      {
-        "path": "pages/todo/detail",
-        "style": {
-          "navigationBarTitleText": "任务详情"
-        }
-      },
-  // 原有的工作台页面（从 TabBar 移除，可保留为普通页面）
-  {
-    "path": "pages/work/index",
-    "style": {
-      "navigationBarTitleText": "工作台"
-    }
-  },
-  // 现有 Mine 页面
-  {
-    "path": "pages/mine/index",
-    "style": {
-      "navigationBarTitleText": "我的"
-    }
-  }, {
-    "path": "pages/mine/avatar/index",
-    "style": {
-      "navigationBarTitleText": "修改头像"
-    }
-  }, {
-    "path": "pages/mine/info/index",
-    "style": {
-      "navigationBarTitleText": "个人信息"
-    }
-  }, {
-    "path": "pages/mine/info/edit",
-    "style": {
-      "navigationBarTitleText": "编辑资料"
-    }
-  }, {
-    "path": "pages/mine/pwd/index",
-    "style": {
-      "navigationBarTitleText": "修改密码"
-    }
-  }, {
-    "path": "pages/mine/setting/index",
-    "style": {
-      "navigationBarTitleText": "应用设置"
-    }
-  }, {
-    "path": "pages/mine/help/index",
-    "style": {
-      "navigationBarTitleText": "常见问题"
-    }
-  }, {
-    "path": "pages/mine/about/index",
-    "style": {
-      "navigationBarTitleText": "关于我们"
-    }
-  }, {
-    "path": "pages/common/webview/index",
-    "style": {
-      "navigationBarTitleText": "浏览网页"
-    }
-  }, {
-    "path": "pages/common/textview/index",
-    "style": {
-      "navigationBarTitleText": "浏览文本"
-    }
-  }],
+  ],
   "tabBar": {
     "color": "#000000",
     "selectedColor": "#546e7a",
     "borderStyle": "white",
     "backgroundColor": "#ffffff",
-    "list": [{
-      "pagePath": "pages/index",
-      "iconPath": "static/images/tabbar/home.png",
-      "selectedIconPath": "static/images/tabbar/home_.png",
-      "text": "首页"
-    }, {
-      "pagePath": "pages/circle/index",
-      "iconPath": "static/images/tabbar/work.png",
-      "selectedIconPath": "static/images/tabbar/work_.png",
-      "text": "圈子"
-    }, {
-      "pagePath": "pages/ai/index",
-      "iconPath": "static/images/tabbar/work.png",
-      "selectedIconPath": "static/images/tabbar/work_.png",
-      "text": "AI"
-    }, {
-      "pagePath": "pages/todo/index",
-      "iconPath": "static/images/tabbar/work.png",
-      "selectedIconPath": "static/images/tabbar/work_.png",
-      "text": "代办"
-    }, {
-      "pagePath": "pages/mine/index",
-      "iconPath": "static/images/tabbar/mine.png",
-      "selectedIconPath": "static/images/tabbar/mine_.png",
-      "text": "我的"
-    }]
+    "list": [
+      {
+        "pagePath": "pages/index",
+        "iconPath": "static/images/tabbar/home.png",
+        "selectedIconPath": "static/images/tabbar/home_.png",
+        "text": "首页"
+      },
+      {
+<<<<<<< HEAD
+<<<<<<< HEAD
+        "pagePath": "pages/work/index",
+        "iconPath": "static/images/tabbar/work.png",
+        "selectedIconPath": "static/images/tabbar/work_.png",
+        "text": "工作台"
+=======
+=======
+>>>>>>> 1842498d63676102edb357e8c34e03b8f2fca3bf
+        "pagePath": "pages/circle/index",
+        "iconPath": "static/images/tabbar/circle.png",
+        "selectedIconPath": "static/images/tabbar/circle_.png",
+        "text": "圈子"
+      },
+      {
+        "pagePath": "pages/ai/index",
+        "iconPath": "static/images/tabbar/ai.png",
+        "selectedIconPath": "static/images/tabbar/ai_.png",
+        "text": "AI"
+      },
+      {
+        "pagePath": "pages/todo/index",
+        "iconPath": "static/images/tabbar/todo.png",
+        "selectedIconPath": "static/images/tabbar/todo_.png",
+        "text": "代办"
+      },
+      {
+        "pagePath": "pages/secondhand/index",
+        "iconPath": "static/images/tabbar/secondhand.png",
+        "selectedIconPath": "static/images/tabbar/secondhand_.png",
+        "text": "二手"
+<<<<<<< HEAD
+>>>>>>> 1842498d63676102edb357e8c34e03b8f2fca3bf
+=======
+>>>>>>> 1842498d63676102edb357e8c34e03b8f2fca3bf
+      },
+      {
+        "pagePath": "pages/mine/index",
+        "iconPath": "static/images/tabbar/mine.png",
+        "selectedIconPath": "static/images/tabbar/mine_.png",
+        "text": "我的"
+      }
+    ]
   },
   "globalStyle": {
     "navigationBarTextStyle": "black",

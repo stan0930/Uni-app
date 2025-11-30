@@ -4,6 +4,8 @@ import store from './store' // store
 import plugins from './plugins' // plugins
 import './permission' // permission
 import { getDicts } from "@/api/system/dict/data"
+import FloatingRobot from '@/components/floating-robot/floating-robot.vue'
+Vue.component('FloatingRobot', FloatingRobot)
 
 Vue.use(plugins)
 

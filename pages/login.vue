@@ -78,6 +78,7 @@
     methods: {
       getCode() {
         getCodeImg().then(res => {
+          console.log("验证码接口返回:", res)
           this.captchaEnabled = res.captchaEnabled === undefined ? true : res.captchaEnabled
           if (this.captchaEnabled) {
             this.codeUrl = "data:image/gif;base64," + res.img

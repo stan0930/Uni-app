@@ -1,20 +1,21 @@
 import { login, logout, getInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
+import config from '@/config'
 
 const user = {
   state: {
     token: getToken(),
     name: '',
-    
+
     // 【新增】添加 userId
-    userId: '', 
-    
-    nickName: '', 
+    userId: '',
+
+    nickName: '',
     avatar: '',
     phonenumber: '',
     email: '',
     sex: '',
-    
+
     roles: [],
     permissions: []
   },
@@ -76,17 +77,18 @@ const user = {
       return new Promise((resolve, reject) => {
         getInfo().then(res => {
           const user = res.user
-          
+
           // 【新增】保存 userId (注意：后端返回字段通常是 userId)
           commit('SET_USERID', user.userId)
-          
+
           commit('SET_NAME', user.userName)
           commit('SET_NICKNAME', user.nickName)
-          commit('SET_AVATAR', user.avatar)
+          const avatar = (user.avatar == "" || user.avatar == null) ? "" : (user.avatar.startsWith('http') ? user.avatar : config.baseUrl + user.avatar)
+          commit('SET_AVATAR', avatar)
           commit('SET_PHONENUMBER', user.phonenumber)
           commit('SET_EMAIL', user.email)
           commit('SET_SEX', user.sex)
-          
+
           commit('SET_ROLES', res.roles)
           commit('SET_PERMISSIONS', res.permissions)
           resolve(res)
@@ -95,7 +97,7 @@ const user = {
         })
       })
     },
-    
+
     // 退出系统
     LogOut({ commit, state }) {
       return new Promise((resolve, reject) => {

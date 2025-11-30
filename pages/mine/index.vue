@@ -1,6 +1,5 @@
 <template>
   <view class="mine-container">
-    
     <view class="header-bg">
       <view class="absolute-header">
         <view class="user-box" @click="goToProfile">
@@ -21,23 +20,19 @@
         </view>
         
         <view class="stats-row">
-          <view class="stat-item" @click="goToCircleTab(0)">
-            <text class="num">--</text>
+          <view class="stat-item" @click="goToHistory('post')">
+            <text class="num">{{ stats.postCount }}</text>
             <text class="label">帖子</text>
           </view>
-          <view class="stat-item" @click="goToCircleTab(2)">
-            <text class="num">--</text>
+          <view class="stat-item" @click="goToHistory('like')">
+            <text class="num">{{ stats.likeCount }}</text>
             <text class="label">获赞</text>
           </view>
-          <view class="stat-item" @click="goToCircleTab(3)">
-            <text class="num">--</text>
+          <view class="stat-item" @click="goToHistory('favorite')">
+            <text class="num">{{ stats.favoriteCount }}</text>
             <text class="label">收藏</text>
           </view>
-          <view class="stat-item">
-            <text class="num">--</text>
-            <text class="label">积分</text>
           </view>
-        </view>
       </view>
       <image src="/static/images/banner/wave.png" class="wave-bg" mode="widthFix" v-if="false"></image>
     </view>
@@ -78,21 +73,52 @@
       <button class="logout-btn" @click="handleLogout" v-if="name">退出登录</button>
       <view class="version-text">Version 1.2.0</view>
     </view>
-    
+	<floating-robot />
   </view>
 </template>
 
 <script>
   import { mapGetters } from 'vuex'
+  // 假设这些是后端提供的接口，用于查询我的发布、点赞、收藏列表
+  // 如果后端没有专门的 count 接口，通常 list 接口返回的 total 字段即为总数
+  import { listMyTopics, listMyLikedTopics, listMyFavoriteTopics } from '@/api/campus/topic'
   
   export default {
     data() {
-      return {};
+      return {
+        stats: {
+          postCount: 0,
+          likeCount: 0,
+          favoriteCount: 0
+        }
+      };
     },
     computed: {
       ...mapGetters(['avatar', 'nickName', 'name']) 
     },
+    onShow() {
+      if (this.name) {
+        this.getStatistics()
+      }
+    },
     methods: {
+      async getStatistics() {
+        try {
+          // 并发请求，pageSize=1 仅为获取 total
+          const [res1, res2, res3] = await Promise.all([
+            listMyTopics({ pageNum: 1, pageSize: 1 }),
+            listMyLikedTopics({ pageNum: 1, pageSize: 1 }),
+            listMyFavoriteTopics({ pageNum: 1, pageSize: 1 })
+          ])
+          
+          this.stats.postCount = res1.total || 0
+          this.stats.likeCount = res2.total || 0
+          this.stats.favoriteCount = res3.total || 0
+        } catch (e) {
+          console.error('获取统计数据失败', e)
+        }
+      },
+      
       goToProfile() {
         if (this.name) {
           uni.navigateTo({ url: '/pages/mine/info/index' });
@@ -100,13 +126,16 @@
           uni.navigateTo({ url: '/pages/login' });
         }
       },
-      // 跳转到圈子页面的不同 Tab
-      goToCircleTab(index) {
-        // 这里假设圈子页面路径是 /pages/circle/index
-        // 实际开发中，你可能需要通过 vuex 或 uni.$emit 传递 index，或者通过 url 参数
-        // 简单做法：跳转过去，让用户自己点
-        uni.switchTab({ url: '/pages/circle/index' });
+      
+      goToHistory(type) {
+        if (!this.name) {
+          return this.$modal.msgError('请先登录')
+        }
+        uni.navigateTo({
+          url: `/pages/mine/history?type=${type}`
+        })
       },
+      
       handleLogout() {
         this.$modal.confirm('确定注销并退出系统吗？').then(() => {
           this.$store.dispatch('LogOut').then(() => {
@@ -123,8 +152,6 @@
     background-color: #f5f7fa;
     min-height: 100vh;
   }
-  
-  /* 头部背景 */
   .header-bg {
     position: relative;
     width: 100%;
@@ -134,21 +161,15 @@
     border-bottom-right-radius: 60rpx;
     overflow: hidden;
   }
-  
   .absolute-header {
     padding: 100rpx 40rpx 0;
   }
-  
-  /* 用户信息区 */
   .user-box {
     display: flex;
     align-items: center;
     margin-bottom: 50rpx;
   }
-  
-  .avatar-wrap {
-    position: relative;
-  }
+  .avatar-wrap { position: relative; }
   .avatar {
     width: 110rpx;
     height: 110rpx;
@@ -169,7 +190,6 @@
     justify-content: center;
     border: 2rpx solid #fff;
   }
-  
   .user-info {
     flex: 1;
     margin-left: 24rpx;
@@ -197,8 +217,6 @@
     font-size: 24rpx;
     opacity: 0.8;
   }
-  
-  /* 数据统计栏 */
   .stats-row {
     display: flex;
     justify-content: space-around;
@@ -209,6 +227,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 10rpx 20rpx;
   }
   .stat-item .num {
     font-size: 32rpx;
@@ -219,15 +238,12 @@
     font-size: 22rpx;
     opacity: 0.8;
   }
-  
-  /* 菜单列表容器 - 向上浮动覆盖背景 */
   .menu-container {
     padding: 0 30rpx;
     margin-top: -80rpx;
     position: relative;
     z-index: 10;
   }
-  
   .menu-card {
     background: #fff;
     border-radius: 24rpx;
@@ -236,15 +252,12 @@
     box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.03);
     overflow: hidden;
   }
-  
   .card-title {
     font-size: 28rpx;
     font-weight: bold;
     color: #333;
     padding: 24rpx 30rpx 10rpx;
   }
-  
-  /* 彩色图标盒子 */
   .icon-box {
     width: 60rpx;
     height: 60rpx;
@@ -258,8 +271,6 @@
   .orange { background: linear-gradient(135deg, #ffcd50, #ff9f43); }
   .green { background: linear-gradient(135deg, #4cd137, #44bd32); }
   .purple { background: linear-gradient(135deg, #a55eea, #8854d0); }
-  
-  /* 退出按钮 */
   .logout-btn {
     margin-top: 40rpx;
     background: #fff;
@@ -270,7 +281,6 @@
     box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.05);
   }
   .logout-btn::after { border: none; }
-  
   .version-text {
     text-align: center;
     color: #ccc;
