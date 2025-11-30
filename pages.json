@@ -6,18 +6,12 @@
         "navigationBarTitleText": "登录"
       }
     },
-<<<<<<< HEAD
-<<<<<<< HEAD
-	{
-	      "path": "pages/mine/history",
-	      "style": {
-	        "navigationBarTitleText": "我的记录"
-	      }
-	    },
-=======
->>>>>>> 1842498d63676102edb357e8c34e03b8f2fca3bf
-=======
->>>>>>> 1842498d63676102edb357e8c34e03b8f2fca3bf
+    {
+      "path": "pages/mine/history",
+      "style": {
+        "navigationBarTitleText": "我的记录"
+      }
+    },
     {
       "path": "pages/register",
       "style": {
@@ -74,45 +68,12 @@
         "navigationBarTitleText": "任务详情"
       }
     },
-<<<<<<< HEAD
-<<<<<<< HEAD
-    /* === 暂时移除以下二手市场页面，防止报错 ===
-=======
->>>>>>> 1842498d63676102edb357e8c34e03b8f2fca3bf
-=======
->>>>>>> 1842498d63676102edb357e8c34e03b8f2fca3bf
-    {
-      "path": "pages/secondhand/index",
-      "style": {
-        "navigationBarTitleText": "二手市场",
-        "enablePullDownRefresh": true
-      }
-    },
-    {
-      "path": "pages/secondhand/detail",
-      "style": {
-        "navigationBarTitleText": "商品详情"
-      }
-    },
-    {
-      "path": "pages/secondhand/post",
-      "style": {
-        "navigationBarTitleText": "发布商品"
-      }
-    },
-<<<<<<< HEAD
-<<<<<<< HEAD
-    */
     {
       "path": "pages/schedule/index",
-          "style": {
-            "navigationBarTitleText": "课表管理"
-          }
+      "style": {
+        "navigationBarTitleText": "课表管理"
+      }
     },
-=======
->>>>>>> 1842498d63676102edb357e8c34e03b8f2fca3bf
-=======
->>>>>>> 1842498d63676102edb357e8c34e03b8f2fca3bf
     {
       "path": "pages/work/index",
       "style": {
@@ -193,41 +154,10 @@
         "text": "首页"
       },
       {
-<<<<<<< HEAD
-<<<<<<< HEAD
         "pagePath": "pages/work/index",
         "iconPath": "static/images/tabbar/work.png",
         "selectedIconPath": "static/images/tabbar/work_.png",
         "text": "工作台"
-=======
-=======
->>>>>>> 1842498d63676102edb357e8c34e03b8f2fca3bf
-        "pagePath": "pages/circle/index",
-        "iconPath": "static/images/tabbar/circle.png",
-        "selectedIconPath": "static/images/tabbar/circle_.png",
-        "text": "圈子"
-      },
-      {
-        "pagePath": "pages/ai/index",
-        "iconPath": "static/images/tabbar/ai.png",
-        "selectedIconPath": "static/images/tabbar/ai_.png",
-        "text": "AI"
-      },
-      {
-        "pagePath": "pages/todo/index",
-        "iconPath": "static/images/tabbar/todo.png",
-        "selectedIconPath": "static/images/tabbar/todo_.png",
-        "text": "代办"
-      },
-      {
-        "pagePath": "pages/secondhand/index",
-        "iconPath": "static/images/tabbar/secondhand.png",
-        "selectedIconPath": "static/images/tabbar/secondhand_.png",
-        "text": "二手"
-<<<<<<< HEAD
->>>>>>> 1842498d63676102edb357e8c34e03b8f2fca3bf
-=======
->>>>>>> 1842498d63676102edb357e8c34e03b8f2fca3bf
       },
       {
         "pagePath": "pages/mine/index",
