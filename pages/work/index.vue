@@ -152,16 +152,17 @@
           '/pages/circle/index',   // 1: 校园圈子
           '/pages/ai/index',       // 2: AI助手
           '/pages/todo/index',     // 3: 跑腿代办
-          ''                       // 4: 二手市场 (暂未开发)
+          '/pages/secondhand/index'                       // 4: 二手市场 (暂未开发)
         ];
         
         if (urls[index]) {
           uni.navigateTo({
             url: urls[index]
           });
-        } else {
-           this.$modal.showToast('模块建设中~');
-        }
+        } 
+		// else {
+  //          this.$modal.showToast('模块建设中~');
+  //       }
       },
       changeGrid(e) {
         this.$modal.showToast('模块建设中~')
