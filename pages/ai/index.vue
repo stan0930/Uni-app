@@ -213,6 +213,7 @@ export default {
 				}
 				const res = await addProduct(data)
 				if (res.code === 200) {
+					return '✅ 商品发布成功！\n\n请到“二手市场→我的”页面编辑添加图片。\n💡 注意：你不能购买自己发布的商品'
 					return `✅ 商品发布成功！\n\n📝 商品名称：${args.title}\n💰 价格：￥${args.price}\n📚 分类：${args.category}\n\n📸 重要提示：商品暂无图片！请到二手市场 → 我的发布 → 找到该商品 → 点击编辑上传真实照片，这样会更容易卖出哦！`
 				} else {
 					return `❌ 发布失败：${res.msg || '未知错误'}`
