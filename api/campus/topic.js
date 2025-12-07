@@ -42,6 +42,14 @@ export function toggleFavorite(topicId) {
   })
 }
 
+// 删除帖子
+export function delTopic(topicId) {
+  return request({
+    url: '/campus/topic/' + topicId,
+    method: 'delete'
+  })
+}
+
 // 【新增】查询我发布的话题列表
 export function listMyTopics(query) {
   return request({
@@ -51,7 +59,7 @@ export function listMyTopics(query) {
   })
 }
 
-// 【高亮：新增“我的评论”接口】
+// 【高亮：新增"我的评论"接口】
 export function listMyCommentedTopics(query) {
   return request({
     url: '/campus/topic/my-comments',

@@ -32,7 +32,7 @@ export default {
 			message: '',
 			loading: false,
 			chatHistory: [
-				{ from: 'ai', content: '您好！我是智能助手 🤖\n\n我可以帮您：\n📅 查询课表（如"今天有什么课"）\n🏃 发布跑腿任务\n💬 发布圈子帖子\n\n也可以跟我随便聊聊天！' }
+				{ from: 'ai', content: '您好！我是智能助手 🤖\n\n我可以帮您：\n📅 查询课表（如"今天有什么课"）\n🏃 发布跑腿任务（如"帮我发个取快递任务"）\n💬 发布圈子帖子（如"帮我发个求助帖"）\n🛍️ 发布二手商品（如"帮我卖iPhone"）\n🔍 搜索二手商品（如"帮我找一下iPhone"）\n\n也可以跟我随便聊聊天！' }
 			],
 			scrollTop: 0,
 			conversationHistory: [] // 对话历史（给AI用）
@@ -118,11 +118,15 @@ export default {
 			if (functionName === 'query_schedule') {
 				return await this.getSchedule(args.day_type)
 			} else if (functionName === 'create_errand_task') {
-				setTimeout(() => uni.navigateTo({ url: `/pages/todo/post?category=${args.task_type}` }), 500)
-				return `🏃 正在为您打开跑腿发布页面（类型：${args.task_type}）...`
+				return await this.createErrandTask(args)
 			} else if (functionName === 'create_circle_post') {
-				setTimeout(() => uni.navigateTo({ url: `/pages/circle/post?category=${args.category}` }), 500)
-				return `💬 正在为您打开发帖页面（分类：${args.category}）...`
+				return await this.createCirclePost(args)
+			} else if (functionName === 'create_secondhand_product') {
+				return await this.createSecondhandProduct(args)
+			} else if (functionName === 'search_secondhand_product') {
+				return await this.searchSecondhandProduct(args)
+			} else if (functionName === 'buy_secondhand_product') {
+				return await this.buySecondhandProduct(args)
 			}
 
 			return '未知工具调用'
@@ -149,6 +153,136 @@ export default {
 				return result
 			} catch (e) {
 				return '📅 获取课表失败'
+			}
+		},
+
+		async createErrandTask(args) {
+			try {
+				const { addErrand } = await import('@/api/campus/errand')
+				const data = {
+					orderType: args.task_type,
+					title: args.title,
+					detail: args.detail,
+					reward: args.reward,
+					deliveryAddress: args.delivery_address,
+					status: '0' // 待接单
+				}
+				const res = await addErrand(data)
+				if (res.code === 200) {
+					return `✅ 任务发布成功！\n\n📋 任务标题：${args.title}\n💰 悬赏：¥${args.reward}\n📍 送达地址：${args.delivery_address}\n\n您可以在跑腿代办页面查看发布的任务。`
+				} else {
+					return `❌ 发布失败：${res.msg || '未知错误'}`
+				}
+			} catch (e) {
+				console.error('发布跑腿任务失败:', e)
+				return `❌ 任务发布失败，请稍后再试`
+			}
+		},
+
+		async createCirclePost(args) {
+			try {
+				const { addTopic } = await import('@/api/campus/topic')
+				const data = {
+					topicType: args.category,
+					content: `${args.title}\n\n${args.content}`,
+					status: '0', // 0=正常
+					commentEnabled: '0' // 0=允许评论
+				}
+				const res = await addTopic(data)
+				if (res.code === 200) {
+					return `✅ 帖子发布成功！\n\n📝 标题：${args.title}\n📚 分类：${args.category}\n\n💡 建议：为了获得更好的互动效果，可以到校园圈子页面找到该帖子，点击编辑添加图片或视频！`
+				} else {
+					return `❌ 发布失败：${res.msg || '未知错误'}`
+				}
+			} catch (e) {
+				console.error('发布帖子失败:', e)
+				return `❌ 帖子发布失败，请稍后再试`
+			}
+		},
+
+		async createSecondhandProduct(args) {
+			try {
+				const { addProduct } = await import('@/api/campus/secondhand')
+				const data = {
+					title: args.title,
+					description: args.description,
+					category: args.category,
+					price: args.price,
+					contactInfo: args.contact_info,
+					status: '0' // 0=在售
+				}
+				const res = await addProduct(data)
+				if (res.code === 200) {
+					return `✅ 商品发布成功！\n\n📝 商品名称：${args.title}\n💰 价格：￥${args.price}\n📚 分类：${args.category}\n\n📸 重要提示：商品暂无图片！请到二手市场 → 我的发布 → 找到该商品 → 点击编辑上传真实照片，这样会更容易卖出哦！`
+				} else {
+					return `❌ 发布失败：${res.msg || '未知错误'}`
+				}
+			} catch (e) {
+				console.error('发布二手商品失败:', e)
+				return `❌ 商品发布失败，请稍后再试`
+			}
+		},
+
+		async searchSecondhandProduct(args) {
+			try {
+				const { listProducts } = await import('@/api/campus/secondhand')
+				const query = {
+					pageNum: 1,
+					pageSize: 10
+				}
+				// 如果指定了分类且不是"全部"
+				if (args.category && args.category !== '全部') {
+					query.category = args.category
+				}
+				// 添加关键词搜索
+				if (args.keyword) {
+					query.title = args.keyword
+				}
+				
+				const res = await listProducts(query)
+				if (res.code === 200 && res.rows) {
+					if (res.rows.length === 0) {
+						return `🔍 没有找到相关商品，试试其他关键词吧！`
+					}
+					
+					let result = `🔍 搜索到 ${res.total} 件相关商品，以下是前 ${Math.min(res.rows.length, 10)} 件：\n\n`
+					res.rows.forEach((item, index) => {
+						result += `${index + 1}. ${item.title}\n`
+						result += `   💰 价格：￥${item.price}\n`
+						if (item.nickName) result += `   👤 卖家：${item.nickName}\n`
+						result += `\n`
+					})
+					result += `您可以在二手市场页面查看详情。`
+					return result
+				} else {
+					return `❌ 搜索失败：${res.msg || '未知错误'}`
+				}
+			} catch (e) {
+				console.error('搜索二手商品失败:', e)
+				return `❌ 搜索失败，请稍后再试`
+			}
+		},
+
+		async buySecondhandProduct(args) {
+			try {
+				const { createOrder } = await import('@/api/campus/order')
+				const data = {
+					productId: args.product_id,
+					address: args.address
+				}
+				if (args.remark) {
+					data.remark = args.remark
+				}
+				
+				const res = await createOrder(data)
+				if (res.code === 200) {
+					return `✅ 订单创建成功！\n\n📍 收货地址：${args.address}\n\n请到“我的订单”页面查看详情。`
+				} else {
+					return `❌ 下单失败：${res.msg || '未知错误'}`
+				}
+			} catch (e) {
+				console.error('购买商品失败:', e)
+				return `❌ 下单失败，请稍后再试`
 			}
 		},
 

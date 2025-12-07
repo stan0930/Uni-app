@@ -160,6 +160,13 @@
       }
     },
     {
+      "path": "pages/secondhand/my-products",
+      "style": {
+        "navigationBarTitleText": "我的发布",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
       "path": "pages/secondhand/order-confirm",
       "style": {
         "navigationBarTitleText": "确认订单"

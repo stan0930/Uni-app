@@ -12,6 +12,10 @@
           {{ cat.label }}
         </view>
       </scroll-view>
+      <view class="my-publish-btn" @click="navigateToMyProducts">
+        <uni-icons type="person-filled" size="18" color="#409EFF"></uni-icons>
+        <text>我的</text>
+      </view>
     </view>
 
     <!-- 商品列表 -->
@@ -199,6 +203,12 @@ export default {
       })
     },
     
+    navigateToMyProducts() {
+      uni.navigateTo({
+        url: '/pages/secondhand/my-products'
+      })
+    },
+    
     trigger(e) {
       if (e.index === 0) {
         uni.navigateTo({
@@ -218,6 +228,8 @@ export default {
 }
 
 .category-bar {
+  display: flex;
+  align-items: center;
   background: #fff;
   padding: 20rpx 0;
   margin-bottom: 20rpx;
@@ -225,6 +237,7 @@ export default {
 }
 
 .category-scroll {
+  flex: 1;
   white-space: nowrap;
   padding: 0 24rpx;
   
@@ -243,6 +256,22 @@ export default {
       color: #fff;
       font-weight: 600;
     }
+  }
+}
+
+.my-publish-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24rpx;
+  gap: 4rpx;
+  flex-shrink: 0;
+  
+  text {
+    font-size: 22rpx;
+    color: #409EFF;
+    margin-top: 2rpx;
   }
 }
 

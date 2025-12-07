@@ -51,6 +51,11 @@
               <view class="icon-box orange"><uni-icons type="locked-filled" size="20" color="#fff"></uni-icons></view>
             </template>
           </uni-list-item>
+          <uni-list-item title="我的订单" link to="/pages/secondhand/orders" :border="false" showArrow>
+            <template v-slot:header>
+              <view class="icon-box red"><uni-icons type="cart-filled" size="20" color="#fff"></uni-icons></view>
+            </template>
+          </uni-list-item>
         </uni-list>
       </view>
 
@@ -271,6 +276,7 @@
   .orange { background: linear-gradient(135deg, #ffcd50, #ff9f43); }
   .green { background: linear-gradient(135deg, #4cd137, #44bd32); }
   .purple { background: linear-gradient(135deg, #a55eea, #8854d0); }
+  .red { background: linear-gradient(135deg, #FF6B6B, #EE5A52); }
   .logout-btn {
     margin-top: 40rpx;
     background: #fff;

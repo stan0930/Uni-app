@@ -49,6 +49,13 @@
                 />
             </view>
         </uni-forms-item>
+        
+        <uni-forms-item label="允许评论" name="commentEnabled" label-width="80px">
+          <view class="switch-wrapper">
+            <switch :checked="form.commentEnabled === '0'" @change="onCommentSwitchChange" color="#3c9cff" />
+            <text class="switch-desc">{{ form.commentEnabled === '0' ? '开启' : '关闭' }}</text>
+          </view>
+        </uni-forms-item>
       </uni-forms>
     </view>
 
@@ -68,7 +75,8 @@
         form: {
           content: '',
           imageUrls: '',
-          topicType: 'recommend' 
+          topicType: 'recommend',
+          commentEnabled: '0' // 0=允许评论, 1=禁止评论
         },
         imageValue: [], 
         
@@ -92,6 +100,10 @@
       bindPickerChange(e) {
         this.pickerIndex = e.detail.value;
         this.form.topicType = this.pickerTabs[this.pickerIndex].type;
+      },
+      
+      onCommentSwitchChange(e) {
+        this.form.commentEnabled = e.detail.value ? '0' : '1';
       },
 
       uploadSuccess(e) {},
@@ -272,6 +284,21 @@
   /* 图片上传区微调 */
   .upload-box {
     margin-top: 10rpx;
+  }
+  
+  /* 开关样式 */
+  .switch-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 20rpx;
+    background-color: #f5f7fa;
+    border-radius: 12rpx;
+    padding: 20rpx;
+    
+    .switch-desc {
+      font-size: 28rpx;
+      color: #606266;
+    }
   }
 
   /* 底部按钮区 */

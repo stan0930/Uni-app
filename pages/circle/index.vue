@@ -45,8 +45,19 @@
               <text class="time">{{ topic.createTime }}</text>
             </view>
           </view>
-          <view :class="['tag', 'tag-' + topic.topicType]">
-            {{ formatTopicType(topic.topicType) }}
+          <view class="header-right" @click.stop>
+            <view :class="['tag', 'tag-' + topic.topicType]">
+              {{ formatTopicType(topic.topicType) }}
+            </view>
+            <!-- 在我的圈子页面显示删除按钮 -->
+            <uni-icons 
+              v-if="isMyListPage" 
+              type="trash" 
+              size="20" 
+              color="#F56C6C" 
+              class="delete-icon"
+              @click="handleDelete(topic.topicId)"
+            ></uni-icons>
           </view>
         </view>
 
@@ -123,7 +134,8 @@
     listMyTopics, 
     listMyCommentedTopics, 
     listMyLikedTopics,
-    listMyFavoriteTopics
+    listMyFavoriteTopics,
+    delTopic
   } from '@/api/campus/topic';
   import config from '@/config';
 
@@ -187,6 +199,9 @@
     computed: {
       isMyPage() {
         return this.tabs[this.currentTab].type === 'my';
+      },
+      isMyListPage() {
+        return this.isMyPage && this.queryParams.topicType === 'my-list';
       }
     },
     onLoad() {
@@ -346,6 +361,24 @@
           current: index
         });
       },
+      handleDelete(topicId) {
+        uni.showModal({
+          title: '提示',
+          content: '确定要删除这条帖子吗？',
+          success: (res) => {
+            if (res.confirm) {
+              delTopic(topicId).then(response => {
+                if (response.code === 200) {
+                  uni.showToast({ title: '删除成功', icon: 'success' });
+                  this.resetList();
+                } else {
+                  uni.showToast({ title: response.msg || '删除失败', icon: 'none' });
+                }
+              });
+            }
+          }
+        });
+      },
       trigger(e) {
         if (e.index === 0) {
           uni.navigateTo({
@@ -407,6 +440,22 @@
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 20rpx;
+  }
+  
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16rpx;
+    
+    .delete-icon {
+      padding: 8rpx;
+      border-radius: 50%;
+      transition: background-color 0.3s;
+      
+      &:active {
+        background-color: #fef0f0;
+      }
+    }
   }
   .user-row {
     display: flex;

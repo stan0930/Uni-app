@@ -88,17 +88,33 @@ export const agentTools = [
         type: 'function',
         function: {
             name: 'create_errand_task',
-            description: '帮用户创建跑腿任务',
+            description: '帮用户创建并发布跑腿任务到系统',
             parameters: {
                 type: 'object',
                 properties: {
                     task_type: {
                         type: 'string',
                         description: '任务类型',
-                        enum: ['取快递', '外卖代购', '代购']
+                        enum: ['取快递', '外卖代购', '代购', '其他']
+                    },
+                    title: {
+                        type: 'string',
+                        description: '任务标题，简短描述任务'
+                    },
+                    detail: {
+                        type: 'string',
+                        description: '任务详细说明'
+                    },
+                    reward: {
+                        type: 'number',
+                        description: '悬赏金额（元）'
+                    },
+                    delivery_address: {
+                        type: 'string',
+                        description: '送达地址'
                     }
                 },
-                required: ['task_type']
+                required: ['task_type', 'title', 'detail', 'reward', 'delivery_address']
             }
         }
     },
@@ -106,7 +122,7 @@ export const agentTools = [
         type: 'function',
         function: {
             name: 'create_circle_post',
-            description: '帮用户在校园圈子发帖',
+            description: '帮用户在校园圈子发布帖子',
             parameters: {
                 type: 'object',
                 properties: {
@@ -114,9 +130,98 @@ export const agentTools = [
                         type: 'string',
                         description: '帖子分类',
                         enum: ['二手市场', '求助板块', '兼职发布', '恋爱交友']
+                    },
+                    title: {
+                        type: 'string',
+                        description: '帖子标题'
+                    },
+                    content: {
+                        type: 'string',
+                        description: '帖子正文内容'
                     }
                 },
-                required: ['category']
+                required: ['category', 'title', 'content']
+            }
+        }
+    },
+    {
+        type: 'function',
+        function: {
+            name: 'create_secondhand_product',
+            description: '帮用户在二手市场发布商品',
+            parameters: {
+                type: 'object',
+                properties: {
+                    title: {
+                        type: 'string',
+                        description: '商品标题'
+                    },
+                    description: {
+                        type: 'string',
+                        description: '商品描述'
+                    },
+                    category: {
+                        type: 'string',
+                        description: '商品分类',
+                        enum: ['数码产品', '图书教材', '生活用品', '其他']
+                    },
+                    price: {
+                        type: 'number',
+                        description: '商品价格（元）'
+                    },
+                    contact_info: {
+                        type: 'string',
+                        description: '联系方式（微信/QQ/电话）'
+                    }
+                },
+                required: ['title', 'description', 'category', 'price', 'contact_info']
+            }
+        }
+    },
+    {
+        type: 'function',
+        function: {
+            name: 'search_secondhand_product',
+            description: '帮用户搜索二手市场的商品',
+            parameters: {
+                type: 'object',
+                properties: {
+                    keyword: {
+                        type: 'string',
+                        description: '搜索关键词（商品名称或描述）'
+                    },
+                    category: {
+                        type: 'string',
+                        description: '商品分类（可选）',
+                        enum: ['数码产品', '图书教材', '生活用品', '其他', '全部']
+                    }
+                },
+                required: ['keyword']
+            }
+        }
+    },
+    {
+        type: 'function',
+        function: {
+            name: 'buy_secondhand_product',
+            description: '帮用户购买二手商品，创建订单',
+            parameters: {
+                type: 'object',
+                properties: {
+                    product_id: {
+                        type: 'number',
+                        description: '要购买的商品ID'
+                    },
+                    address: {
+                        type: 'string',
+                        description: '收货地址'
+                    },
+                    remark: {
+                        type: 'string',
+                        description: '订单备注（可选）'
+                    }
+                },
+                required: ['product_id', 'address']
             }
         }
     }
