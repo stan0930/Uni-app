@@ -108,7 +108,12 @@ const user = {
           removeToken()
           resolve()
         }).catch(error => {
-          reject(error)
+          // 即使后端接口失败，也要清除本地状态
+          commit('SET_TOKEN', '')
+          commit('SET_ROLES', [])
+          commit('SET_PERMISSIONS', [])
+          removeToken()
+          resolve() // 改为resolve，确保前端能正常退出登录
         })
       })
     }

@@ -60,6 +60,12 @@
           <text>状态管理</text>
         </view>
         
+        <!-- 非自己的商品且在售状态，显示购买按钮 -->
+        <view v-if="!isMine && product.status === '0'" class="buy-btn" @click="handleBuy">
+          立即购买
+        </view>
+        
+        <!-- 非自己的商品，显示联系卖家按钮 -->
         <view v-if="!isMine && product.contactInfo" class="contact-btn" @click="contactSeller">
           联系卖家
         </view>
@@ -176,6 +182,7 @@ export default {
       })
     },
     
+    
     contactSeller() {
       uni.showModal({
         title: '联系方式',
@@ -191,6 +198,19 @@ export default {
             })
           }
         }
+      })
+    },
+    
+    handleBuy() {
+      // 检查商品状态
+      if (this.product.status !== '0') {
+        this.$modal.msgError('商品已售出或已下架')
+        return
+      }
+      
+      // 跳转到订单确认页
+      uni.navigateTo({
+        url: '/pages/secondhand/order-confirm?productId=' + this.productId
       })
     }
   }
@@ -336,6 +356,20 @@ export default {
     gap: 6rpx;
     font-size: 24rpx;
     color: #606266;
+  }
+  
+  .buy-btn {
+    flex: 2;
+    height: 70rpx;
+    background: linear-gradient(135deg, #FF6B6B 0%, #EE5A52 100%);
+    color: #fff;
+    border-radius: 40rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30rpx;
+    font-weight: 600;
+    margin-right: 20rpx;
   }
   
   .contact-btn {
