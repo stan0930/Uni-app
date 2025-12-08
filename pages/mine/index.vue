@@ -56,6 +56,27 @@
               <view class="icon-box red"><uni-icons type="cart-filled" size="20" color="#fff"></uni-icons></view>
             </template>
           </uni-list-item>
+          <uni-list-item title="我收到的订单" link to="/pages/secondhand/seller-orders" :border="false" showArrow>
+            <template v-slot:header>
+              <view class="icon-box purple"><uni-icons type="wallet-filled" size="20" color="#fff"></uni-icons></view>
+            </template>
+          </uni-list-item>
+        </uni-list>
+      </view>
+
+      <view class="menu-card">
+        <view class="card-title">跑腿任务</view>
+        <uni-list :border="false">
+          <uni-list-item title="我发布的任务" link to="/pages/todo/my-published" :border="false" showArrow>
+            <template v-slot:header>
+              <view class="icon-box blue"><uni-icons type="paperplane-filled" size="20" color="#fff"></uni-icons></view>
+            </template>
+          </uni-list-item>
+          <uni-list-item title="我接的任务" link to="/pages/todo/my-taken" :border="false" showArrow>
+            <template v-slot:header>
+              <view class="icon-box green"><uni-icons type="checkmarkempty" size="20" color="#fff"></uni-icons></view>
+            </template>
+          </uni-list-item>
         </uni-list>
       </view>
 

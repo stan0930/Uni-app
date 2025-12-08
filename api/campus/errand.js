@@ -60,3 +60,21 @@ export function completeErrand(errandOrderId) {
     method: 'put'
   })
 }
+
+// 查询我发布的跑腿任务
+export function myPublishedErrands(query) {
+  return request({
+    url: `${baseUrl}/my-published`,
+    method: 'get',
+    params: query
+  })
+}
+
+// 查询我接的跑腿任务
+export function myTakenErrands(query) {
+  return request({
+    url: `${baseUrl}/my-taken`,
+    method: 'get',
+    params: query
+  })
+}

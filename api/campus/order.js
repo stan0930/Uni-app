@@ -41,3 +41,20 @@ export function confirmReceipt(orderId) {
         method: 'put'
     })
 }
+
+// 查询卖家收到的订单列表（卖家视角）
+export function sellerOrders(query) {
+    return request({
+        url: '/campus/order/seller-orders',
+        method: 'get',
+        params: query
+    })
+}
+
+// 卖家发货
+export function shipOrder(orderId) {
+    return request({
+        url: '/campus/order/ship/' + orderId,
+        method: 'put'
+    })
+}

@@ -69,6 +69,20 @@
       }
     },
     {
+      "path": "pages/todo/my-published",
+      "style": {
+        "navigationBarTitleText": "我发布的任务",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/todo/my-taken",
+      "style": {
+        "navigationBarTitleText": "我接的任务",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
       "path": "pages/schedule/index",
       "style": {
         "navigationBarTitleText": "课表管理"
@@ -183,6 +197,13 @@
       "path": "pages/secondhand/order-detail",
       "style": {
         "navigationBarTitleText": "订单详情"
+      }
+    },
+    {
+      "path": "pages/secondhand/seller-orders",
+      "style": {
+        "navigationBarTitleText": "我收到的订单",
+        "enablePullDownRefresh": true
       }
     }
   ],
