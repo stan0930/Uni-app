@@ -98,6 +98,8 @@ export default {
 				// ]
 				const toolCall = assistantMessage.tool_calls[0]
 				const functionName = toolCall.function.name
+				// AI 返回的 arguments 是一个字符串，比如 '{"reward": 5, ...}'
+				// 这里用 JSON.parse 把它变成了真正的 JS 对象
 				const functionArgs = JSON.parse(toolCall.function.arguments)
 
 				console.log('AI调用工具:', functionName, functionArgs)
@@ -200,6 +202,7 @@ export default {
 
 		async createErrandTask(args) {
 			try {
+				// api/campus/errand.js  addErrand方法
 				const { addErrand } = await import('@/api/campus/errand')
 				const data = {
 					orderType: args.task_type,
