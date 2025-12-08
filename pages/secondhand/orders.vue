@@ -98,7 +98,9 @@ export default {
       this.loadingStatus = 'loading'
       
       myOrders(this.queryParams).then(res => {
+        console.log('订单列表数据:', res)  // ⭐ 添加日志
         const newRows = res.rows || []
+        console.log('第一条订单数据:', newRows[0])  // ⭐ 添加日志
         
         if (this.queryParams.pageNum === 1) {
           this.orderList = newRows

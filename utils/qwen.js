@@ -13,7 +13,7 @@ export async function callQwenAI(messages, tools = null) {
     const requestBody = {
         model: 'qwen-plus', // 使用qwen-plus模型
         input: {
-            messages: messages
+            messages: messages   // ← conversationHistory 传进来的
         },
         parameters: {
             result_format: 'message'
@@ -21,11 +21,11 @@ export async function callQwenAI(messages, tools = null) {
     };
 
     if (tools) {
-        requestBody.parameters.tools = tools;
+        requestBody.parameters.tools = tools;    // ← agentTools 传进来的
     }
 
-    console.log('通义千问请求:', requestBody);
-
+    console.log('通义千问请求:', requestBody);// 完整数据
+    // 发送HTTP请求
     return new Promise((resolve) => {
         uni.request({
             url: QWEN_API_URL,
@@ -34,7 +34,7 @@ export async function callQwenAI(messages, tools = null) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${QWEN_API_KEY}`
             },
-            data: requestBody,
+            data: requestBody,  // 发送组装好的数据
             timeout: 30000,
             success: (response) => {
                 console.log('通义千问响应:', response);
@@ -69,7 +69,7 @@ export const agentTools = [
     {
         type: 'function',
         function: {
-            name: 'query_schedule',
+            name: 'query_schedule',//查课表
             description: '查询用户的课程表，可以查询今天、明天、或指定星期几的课程',
             parameters: {
                 type: 'object',
@@ -87,7 +87,7 @@ export const agentTools = [
     {
         type: 'function',
         function: {
-            name: 'create_errand_task',
+            name: 'create_errand_task',//创跑腿
             description: '帮用户创建并发布跑腿任务到系统',
             parameters: {
                 type: 'object',
@@ -114,14 +114,14 @@ export const agentTools = [
                         description: '送达地址'
                     }
                 },
-                required: ['task_type', 'title', 'detail', 'reward', 'delivery_address']
+                required: ['task_type', 'title', 'detail', 'reward', 'delivery_address']//告诉ai必填
             }
         }
     },
     {
         type: 'function',
         function: {
-            name: 'create_circle_post',
+            name: 'create_circle_post',//发帖子
             description: '帮用户在校园圈子发布帖子',
             parameters: {
                 type: 'object',
@@ -147,7 +147,7 @@ export const agentTools = [
     {
         type: 'function',
         function: {
-            name: 'create_secondhand_product',
+            name: 'create_secondhand_product',//发二手
             description: '帮用户在二手市场发布商品',
             parameters: {
                 type: 'object',
@@ -181,7 +181,7 @@ export const agentTools = [
     {
         type: 'function',
         function: {
-            name: 'search_secondhand_product',
+            name: 'search_secondhand_product',//查二手
             description: '帮用户搜索二手市场的商品',
             parameters: {
                 type: 'object',
@@ -203,7 +203,7 @@ export const agentTools = [
     {
         type: 'function',
         function: {
-            name: 'buy_secondhand_product',
+            name: 'buy_secondhand_product',//买二手
             description: '帮用户购买二手商品，创建订单',
             parameters: {
                 type: 'object',

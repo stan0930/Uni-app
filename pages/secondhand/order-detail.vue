@@ -152,7 +152,10 @@ export default {
         success: (res) => {
           if (res.confirm) {
             cancelOrder(this.orderId).then(() => {
-              this.$modal.msgSuccess('订单已取消')
+              uni.showToast({
+                title: '订单已取消',
+                icon: 'success'
+              })
               this.loadOrder()
             })
           }
@@ -167,7 +170,10 @@ export default {
         success: (res) => {
           if (res.confirm) {
             confirmReceipt(this.orderId).then(() => {
-              this.$modal.msgSuccess('收货成功')
+              uni.showToast({
+                title: '收货成功',
+                icon: 'success'
+              })
               this.loadOrder()
             })
           }

@@ -7,12 +7,13 @@
 				</view>
 			</view>
 		</scroll-view>
-
-		<view class="input-area">
+									
+		<view class="input-area">  
+			<!-- v-model="message"存对话 -->
 			<uni-easyinput 
 				type="text" 
-				v-model="message" 
-				placeholder="试试问我任何问题..."
+				v-model="message"    
+				placeholder="试试问我任何问题..." 
 				@confirm="handleSend"
 				:inputBorder="false"
 				class="input-field"
@@ -39,17 +40,18 @@ export default {
 		}
 	},
 	methods: {
-		async handleSend() {
+		async handleSend() {       //发送
 			const msg = this.message.trim()
 			if (!msg) return
 
-			this.chatHistory.push({ from: 'user', content: msg })
-			this.conversationHistory.push({ role: 'user', content: msg })
+			this.chatHistory.push({ from: 'user', content: msg })//人
+			this.conversationHistory.push({ role: 'user', content: msg })//ai  conversationHistory存对话框
 			this.message = ''
 			this.loading = true
 			this.scrollToBottom()
 
 			try {
+				// 核心：调用AI处理
 				const aiResponse = await this.callQwenAgent(msg)
 				this.chatHistory.push({ from: 'ai', content: aiResponse })
 			} catch (e) {
@@ -62,26 +64,66 @@ export default {
 
 		async callQwenAgent(userMessage) {
 			// 调用千问API（带工具）
-			const response = await callQwenAI(this.conversationHistory, agentTools)
+			const response = await callQwenAI(this.conversationHistory, agentTools)//ai返回的数据
+			// 工具清单（从utils/qwen.js导入）
+				// 			{
+				//   messages: [
+				//     { role: 'user', content: '帮我发个取快递的任务，送到宿舍楼下，给5块钱' }
+				//   ],
+				//   tools: [
+				//     { name: 'create_errand_task', description: '创建跑腿任务', ... },
+				//     { name: 'query_schedule', description: '查询课表', ... },
+				//     // ... 其他工具
+				//   ]
+				// }
 			
 			if (!response.success) {
 				return '抱歉，AI服务暂时不可用：' + response.error
 			}
-
+			// 提取AI的回复
 			const choice = response.data.choices[0]
 			const assistantMessage = choice.message
 
 			// 检查AI是否要调用工具
 			if (assistantMessage.tool_calls && assistantMessage.tool_calls.length > 0) {
-				// AI决定调用工具
+				// AI决定调用工具，工具信息下面
+				// tool_calls: [
+				//     {
+				//         id: 'tool_call_id_1',
+				//         function: {
+				//             name: 'create_errand_task',
+				//             arguments: '{"task_type": "快递", "title": "取快递", "detail": "取快递", "reward": 5, "delivery_address": "宿舍楼下"}'
+				//         }
+				//     }
+				// ]
 				const toolCall = assistantMessage.tool_calls[0]
 				const functionName = toolCall.function.name
 				const functionArgs = JSON.parse(toolCall.function.arguments)
 
 				console.log('AI调用工具:', functionName, functionArgs)
 
-				// 执行工具
+				// 执行工具，结果存到 toolResult
 				const toolResult = await this.executeToolCall(functionName, functionArgs)
+				     
+					// 		     		async executeToolCall(functionName, args) {
+					// 	console.log('执行工具:', functionName, args)
+
+					// 	if (functionName === 'query_schedule') {
+					// 		return await this.getSchedule(args.day_type)
+					// 	} else if (functionName === 'create_errand_task') {
+					// 		return await this.createErrandTask(args)
+					// 	} else if (functionName === 'create_circle_post') {
+					// 		return await this.createCirclePost(args)
+					// 	} else if (functionName === 'create_secondhand_product') {
+					// 		return await this.createSecondhandProduct(args)
+					// 	} else if (functionName === 'search_secondhand_product') {
+					// 		return await this.searchSecondhandProduct(args)
+					// 	} else if (functionName === 'buy_secondhand_product') {
+					// 		return await this.buySecondhandProduct(args)
+					// 	}
+
+					// 	return '未知工具调用'
+					// },
 
 				// 将工具调用结果发回给AI
 				this.conversationHistory.push({
@@ -90,8 +132,8 @@ export default {
 					tool_calls: assistantMessage.tool_calls
 				})
 				this.conversationHistory.push({
-					role: 'tool',
-					content: toolResult,
+					role: 'tool',			// 标记这是工具的返回结果
+					content: toolResult,	// 工具执行的结果
 					tool_call_id: toolCall.id
 				})
 
@@ -111,7 +153,7 @@ export default {
 				return content
 			}
 		},
-
+		//执行工具！！！6个
 		async executeToolCall(functionName, args) {
 			console.log('执行工具:', functionName, args)
 
@@ -167,7 +209,7 @@ export default {
 					deliveryAddress: args.delivery_address,
 					status: '0' // 待接单
 				}
-				const res = await addErrand(data)
+				const res = await addErrand(data)    //调后端api
 				if (res.code === 200) {
 					return `✅ 任务发布成功！\n\n📋 任务标题：${args.title}\n💰 悬赏：¥${args.reward}\n📍 送达地址：${args.delivery_address}\n\n您可以在跑腿代办页面查看发布的任务。`
 				} else {
