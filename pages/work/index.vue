@@ -58,6 +58,15 @@
             <text class="text">二手市场</text>
           </view>
         </uni-grid-item>
+
+        <uni-grid-item :index="5">
+          <view class="grid-item-box">
+            <view class="icon-bg bg-gradient-cyan">
+              <uni-icons type="flag-filled" size="32" color="#fff"></uni-icons>
+            </view>
+            <text class="text">活动中心</text>
+          </view>
+        </uni-grid-item>
         
       </uni-grid>
     </view>
@@ -152,7 +161,8 @@
           '/pages/circle/index',   // 1: 校园圈子
           '/pages/ai/index',       // 2: AI助手
           '/pages/todo/index',     // 3: 跑腿代办
-          '/pages/secondhand/index'                       // 4: 二手市场 (暂未开发)
+          '/pages/secondhand/index', // 4: 二手市场
+          '/pages/activity/index'    // 5: 活动中心
         ];
         
         if (urls[index]) {
@@ -235,6 +245,9 @@
   }
   .bg-gradient-green {
     background: linear-gradient(135deg, #4CAF50, #8BC34A);
+  }
+  .bg-gradient-cyan {
+    background: linear-gradient(135deg, #00BCD4, #26C6DA);
   }
 
   .uni-margin-wrap {

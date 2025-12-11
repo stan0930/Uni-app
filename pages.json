@@ -205,6 +205,19 @@
         "navigationBarTitleText": "我收到的订单",
         "enablePullDownRefresh": true
       }
+    },
+    {
+      "path": "pages/activity/index",
+      "style": {
+        "navigationBarTitleText": "活动中心",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/activity/detail",
+      "style": {
+        "navigationBarTitleText": "活动详情"
+      }
     }
   ],
   "tabBar": {
@@ -235,7 +248,7 @@
   },
   "globalStyle": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "RuoYi",
+    "navigationBarTitleText": "Smart Campus",
     "navigationBarBackgroundColor": "#FFFFFF"
   }
 }
