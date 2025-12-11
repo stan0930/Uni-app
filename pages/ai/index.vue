@@ -85,6 +85,7 @@ export default {
 			const assistantMessage = choice.message
 
 			// 检查AI是否要调用工具
+			
 			if (assistantMessage.tool_calls && assistantMessage.tool_calls.length > 0) {
 				// AI决定调用工具，工具信息下面
 				// tool_calls: [
@@ -293,7 +294,7 @@ export default {
 					
 					let result = `🔍 搜索到 ${res.total} 件相关商品，以下是前 ${Math.min(res.rows.length, 10)} 件：\n\n`
 					res.rows.forEach((item, index) => {
-						result += `${index + 1}. ${item.title}\n`
+						result += `${index + 1}. ${item.title} (ID: ${item.productId})\n`
 						result += `   💰 价格：￥${item.price}\n`
 						if (item.nickName) result += `   👤 卖家：${item.nickName}\n`
 						result += `\n`

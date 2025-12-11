@@ -16,7 +16,7 @@ export async function callQwenAI(messages, tools = null) {
             messages: messages   // ← conversationHistory 传进来的
         },
         parameters: {
-            result_format: 'message'
+            result_format: 'message'// <--- 标准对话格式
         }
     };
 
